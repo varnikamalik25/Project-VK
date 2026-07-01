@@ -1,11 +1,31 @@
+class Neuron:
+    
+    weights = []
+    bias = 0
+    
+    def __init__(self,weight,bias):
+        
+        
+        self.weights = weight
+        self.bias = bias
+
+    def validate_inputs(self,i,w):
+        return  (len(i) == len(w))
+    def output(self,inputs):
+        total = 0
+        if not self.validate_inputs(inputs,self.weights):
+            raise ValueError("Not enough weights!!")
+
+        for i in range(len(inputs)):
+            total += inputs[i] * self.weights[i]
+
+        total += self.bias
+        return total
+        
+
 inputs = [1,2,3,2.5]
-weights = [0.2,0.8,-0.5,1.0]
-bias = 2
+neuron1 = Neuron([0.2,0.8,-0.5,1.0],2)
+neuron2 = Neuron([0.5,-0.91,0.26,-0.5],3)
+neuron3 = Neuron([-0.26,-0.27,0.17,0.87],0.5)
 
-output = 0
-for i in range(4):
-    output += inputs[i]*weights[i]
-
-output += bias
-
-print("Output of Neural Network is: ",output)
+print([neuron1.output(inputs),neuron2.output(inputs),neuron3.output(inputs)])

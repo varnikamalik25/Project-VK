@@ -1,3 +1,5 @@
+import numpy as np
+
 class Neuron:
     
     weights = []
@@ -12,15 +14,7 @@ class Neuron:
     def validate_inputs(self,i,w):
         return  (len(i) == len(w))
     def output(self,inputs):
-        total = 0
-        if not self.validate_inputs(inputs,self.weights):
-            raise ValueError("Not enough weights!!")
-
-        for i in range(len(inputs)):
-            total += inputs[i] * self.weights[i]
-
-        total += self.bias
-        return total
+        return np.dot(self.weights,inputs)+self.bias
         
 
 inputs = [1,2,3,2.5]

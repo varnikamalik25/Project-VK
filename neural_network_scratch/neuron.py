@@ -1,25 +1,24 @@
 import numpy as np
+np.random.seed(0)
 
-class Neuron:
+class Layer:
     
-    weights = []
-    bias = 0
-    
-    def __init__(self,weight,bias):
+    def __init__(self,inputs,neurons):
+        self.weights = 0.10*np.random.randn(inputs,neurons)
+        self.biases = np.zeros((1,neurons))
+
+    def forward(self,inputs):
+        self.outputs = np.dot(inputs,self.weights) + self.biases
         
         
-        self.weights = weight
-        self.bias = bias
 
-    def validate_inputs(self,i,w):
-        return  (len(i) == len(w))
-    def output(self,inputs):
-        return np.dot(self.weights,inputs)+self.bias
-        
+X = [[1,2,3,2.5],
+[2.0,5.0,-1.0,2.0],
+[-1.5,2.7,3.3,-0.8]]
 
-inputs = [1,2,3,2.5]
-neuron1 = Neuron([0.2,0.8,-0.5,1.0],2)
-neuron2 = Neuron([0.5,-0.91,0.26,-0.5],3)
-neuron3 = Neuron([-0.26,-0.27,0.17,0.87],0.5)
+layer1 = Layer(4,5)
+layer2 = Layer(5,2)
 
-print([neuron1.output(inputs),neuron2.output(inputs),neuron3.output(inputs)])
+layer1.forward(X)
+layer2.forward(layer1.outputs)
+print(layer2.outputs)

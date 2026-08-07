@@ -12,13 +12,17 @@ class Layer:
 
 
     def softmax(self,inputs):
-        print(inputs)
+
         exp_values = np.exp(inputs-np.max(inputs,axis=1,keepdims=True))
         # print(exp_values)
         self.outputs = exp_values/np.sum(exp_values,axis=1,keepdims=True)
 
     def ReLU(self,inputs):
         self.outputs = np.maximum(0,inputs)
+
+    def sigmoid(self,inputs):
+        output = 1/(1+np.exp(-inputs))
+        return output
 
 
 
@@ -33,12 +37,32 @@ class Layer:
 img_path = "../train/0/0000.png"
 X = decode_inputs.decode_image(img_path)
 
+X = X.astype(np.float32)
+X /= 255.0          # Normalize
 
-layer1 = Layer(28,28)
-layer2 = Layer(28,28)
-layer1.softmax(X)
+X = X.reshape(1,784)
 
-softmax_outputs = layer1.outputs
+
+
+layer1 = Layer(784,128)
+layer2 = Layer(128,2)
+
+layer1.forward(X)
+
+layer2.softmax(layer2.sigmoid(layer1.outputs))
+
+layer1.forward(X)
+
+hidden = layer1.sigmoid(layer1.outputs)
+
+layer2.forward(hidden)
+
+layer2.softmax(layer2.outputs)
+
+prediction = layer2.outputs
+print(prediction)
+
+
 # print(softmax_outputs)
 # loss = 0
 # for x,y in zip(target_output,softmax_outputs):
@@ -46,7 +70,6 @@ softmax_outputs = layer1.outputs
 
 #         loss += math.log(j)*i
 # print(loss*-1)
-print()
-layer2.forward(layer1.outputs)
+
 # print(layer2.outputs)
 

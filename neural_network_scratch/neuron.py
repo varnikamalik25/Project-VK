@@ -32,41 +32,64 @@ class Layer:
 
             loss += math.log(j)*i
         return -loss
+    def backprop(self, dvalues, inputs):
+        self.dweights = np.dot(inputs.T, dvalues)
+        self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
+        return np.dot(dvalues, self.weights.T)
+
+    def update_weights(self, learning_rate):
+        self.weights -= learning_rate * self.dweights
+        self.biases -= learning_rate * self.dbiases
 
 
 
 
 
 
-img_path = "../train/0/0000.png"
-X = decode_inputs.decode_image(img_path)
 
-X = X.astype(np.float32)
-X /= 255.0  # Normalize
-
-X = X.reshape(1, 784)
+learning_rate = 0.01
 
 target_outputs = [0,1]
 layer1 = Layer(784, 128)
 layer2 = Layer(128, 2)
+for i in range(100000):
+    target_outputs = list(map(lambda x: not x, target_outputs))
+    if i%500 ==0:
+        img_path = f"../train/0/0{str(0)*(3-len(str(i//500)))}{str(i//500)}.png"
+        # print(img_path)
+        X = decode_inputs.decode_image(img_path)
 
-layer1.forward(X)
+        X = X.astype(np.float32)
+        X /= 255.0  # Normalize
 
-layer2.softmax(layer2.sigmoid(layer1.outputs))
+        X = X.reshape(1, 784)
+    layer1.forward(X)
+    hidden = layer1.sigmoid(layer1.outputs)
 
-layer1.forward(X)
+    layer2.forward(hidden)
+    layer2.softmax(layer2.outputs)
 
-hidden = layer1.sigmoid(layer1.outputs)
+    prediction = layer2.outputs
+    # Output gradient
+    d_output = prediction - target_outputs
 
-layer2.forward(hidden)
+    # Backprop layer 2
+    d_hidden = layer2.backprop(d_output, hidden)
 
-layer2.softmax(layer2.outputs)
+    # Backprop through sigmoid
+    d_hidden *= hidden * (1 - hidden)
 
-prediction = layer2.outputs
+    # Backprop layer 1
+    layer1.backprop(d_hidden, X)
 
-loss = layer2.loss(target_outputs,layer2.outputs)
+    # Update weights
+    layer2.update_weights(learning_rate)
+    layer1.update_weights(learning_rate)
 
-print(loss)
-print(prediction)
+    loss = layer2.loss(target_outputs,layer2.outputs)
+    if i%10000 == 0:
+
+        print(loss)
+        print(prediction)
 
 

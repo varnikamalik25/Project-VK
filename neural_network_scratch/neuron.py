@@ -52,10 +52,12 @@ learning_rate = 0.01
 target_outputs = [0,1]
 layer1 = Layer(784, 128)
 layer2 = Layer(128, 2)
+factor = 1000
 for i in range(100000):
-    target_outputs = list(map(lambda x: not x, target_outputs))
-    if i%500 ==0:
-        img_path = f"../train/0/0{str(0)*(3-len(str(i//500)))}{str(i//500)}.png"
+
+    if i%factor ==0:
+        target_outputs = list(map(lambda x: not x, target_outputs))
+        img_path = f"../train/0/0{str(0)*(3-len(str(i//factor)))}{str(i//factor)}.png"
         # print(img_path)
         X = decode_inputs.decode_image(img_path)
 
@@ -87,9 +89,9 @@ for i in range(100000):
     layer1.update_weights(learning_rate)
 
     loss = layer2.loss(target_outputs,layer2.outputs)
-    if i%10000 == 0:
 
-        print(loss)
-        print(prediction)
+
+    print(loss)
+    print(prediction)
 
 
